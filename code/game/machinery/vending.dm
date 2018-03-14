@@ -866,7 +866,6 @@ IF YOU MODIFY THE PRODUCTS LIST OF A MACHINE, MAKE SURE TO UPDATE ITS RESUPPLY C
 					/obj/item/reagent_containers/glass/bottle/charcoal = 4,
 					/obj/item/reagent_containers/glass/bottle/epinephrine = 4,
 					/obj/item/reagent_containers/glass/bottle/salglu_solution = 3,
-					/obj/item/reagent_containers/glass/bottle/morphine = 4,
 					/obj/item/reagent_containers/glass/bottle/toxin = 3,
 					/obj/item/reagent_containers/syringe/antiviral = 6)
 					*/ //products list in modular_citadel's version of this file

@@ -37,7 +37,6 @@
 	if(!QDELETED(src) && choice && !current_skin && !M.incapacitated() && in_range(M,src))
 		if(!unique_reskin[choice])
 			return
-		current_skin = choice
 		icon_state = unique_reskin[choice]
 		name = choice
 		to_chat(M, "[src] is now skinned as '[choice].'")
