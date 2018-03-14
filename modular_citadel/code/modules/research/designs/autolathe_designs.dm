@@ -6,7 +6,7 @@
 	build_path = /obj/item/reagent_containers/glass/bottle/vial/small
 	category = list("initial","Medical")
 
-/datum/design/bucket
+/datum/design/hypoviallarge
 	name = "Large Hypovial"
 	id = "large_hypovial"
 	build_type = AUTOLATHE

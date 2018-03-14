@@ -44,7 +44,7 @@
 	storage_slots = 5
 
 /obj/item/storage/hypospraykit/regular
-	icon_state = "hypospray kit"
+	icon_state = "firstaid-mini"
 	desc = "A hypospray kit with general use vials."
 
 /obj/item/storage/hypospraykit/regular/PopulateContents()
@@ -122,6 +122,8 @@
 	desc = "A kit containing a Deluxe hypospray and Vials."
 	icon_state = "tactical-mini"
 	max_w_class = WEIGHT_CLASS_NORMAL
+	storage_slots = 6
+	max_combined_w_class = 6
 
 /obj/item/storage/hypospraykit/cmo/PopulateContents()
 	if(empty)
@@ -131,6 +133,7 @@
 	new /obj/item/reagent_containers/glass/bottle/vial/large/preloaded/charcoal(src)
 	new /obj/item/reagent_containers/glass/bottle/vial/large/preloaded/salglu(src)
 	new /obj/item/reagent_containers/glass/bottle/vial/large/preloaded/dexalin(src)
+	new /obj/item/reagent_containers/glass/bottle/vial/large/preloaded/synthflesh(src)
 
 /obj/item/storage/box/vials
 	name = "box of hypovials"

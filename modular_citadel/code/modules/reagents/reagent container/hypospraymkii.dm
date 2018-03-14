@@ -1,6 +1,21 @@
 #define HYPO_SPRAY 0
 #define HYPO_INJECT 1
 
+#define WAIT_SPRAY 50
+#define WAIT_INJECT 40
+#define SELF_SPRAY 20
+#define SELF_INJECT 10
+
+#define DELUXE_WAIT_SPRAY 25
+#define DELUXE_WAIT_INJECT 20
+#define DELUXE_SELF_SPRAY 10
+#define DELUXE_SELF_INJECT 0
+
+#define COMBAT_WAIT_SPRAY 0
+#define COMBAT_WAIT_INJECT 0
+#define COMBAT_SELF_SPRAY 0
+#define COMBAT_SELF_INJECT 0
+
 //A vial-loaded hypospray. Cartridge-based!
 /obj/item/hypospray/mkii
 	name = "hypospray mk.II"
@@ -13,9 +28,12 @@
 	var/obj/item/reagent_containers/glass/bottle/vial/vial
 	var/start_vial = /obj/item/reagent_containers/glass/bottle/vial/small
 	var/spawnwithvial = TRUE
-	var/inject_wait = 50
-	var/spray_wait = 50
+	var/inject_wait = WAIT_INJECT
+	var/spray_wait = WAIT_SPRAY
+	var/spray_self = SELF_SPRAY
+	var/inject_self = SELF_INJECT
 	var/quickload = FALSE
+	var/penetrates = FALSE
 
 /obj/item/hypospray/mkii/brute
 	start_vial = /obj/item/reagent_containers/glass/bottle/vial/small/preloaded/bicaridine
@@ -39,17 +57,22 @@
 	desc = "The Deluxe Hypospray can take larger-size vials. It also acts faster and delivers more reagents per spray."
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | ACID_PROOF
 	start_vial = /obj/item/reagent_containers/glass/bottle/vial/large/preloaded/CMO
-	inject_wait = 20
-	spray_wait = 20
+	inject_wait = DELUXE_WAIT_INJECT
+	spray_wait = DELUXE_WAIT_SPRAY
+	spray_self = DELUXE_SELF_SPRAY
+	inject_self = DELUXE_SELF_INJECT
 
 /obj/item/hypospray/mkii/CMO/combat
 	name = "combat hypospray mk.II"
 	desc = "A combat-ready deluxe hypospray that acts almost instantly. It can be tactically reloaded by using a vial on it."
 	icon_state = "combat2"
 	start_vial = /obj/item/reagent_containers/glass/bottle/vial/large/preloaded/combat
-	inject_wait = 0
-	spray_wait = 0
+	inject_wait = COMBAT_WAIT_INJECT
+	spray_wait = COMBAT_WAIT_SPRAY
+	spray_self = COMBAT_SELF_SPRAY
+	inject_self = COMBAT_SELF_INJECT
 	quickload = TRUE
+	penetrates = TRUE
 
 /obj/item/hypospray/mkii/Initialize()
 	. = ..()
@@ -70,15 +93,15 @@
 
 /obj/item/hypospray/mkii/examine(mob/user)
 	. = ..()
-	to_chat(user, "[vial] has [vial.reagents.total_volume]u remaining.")
-	to_chat(user, "[src] is set to [mode ? "Inject" : "Spray"] contents on application.")
+	to_chat(user, "\The [vial] has [vial.reagents.total_volume]u remaining.")
+	to_chat(user, "\The [src] is set to [mode ? "Inject" : "Spray"] contents on application.")
 
 /obj/item/hypospray/mkii/proc/unload_hypo(obj/item/I, mob/user)
 	if((istype(I, /obj/item/reagent_containers/glass/bottle/vial)))
 		var/obj/item/reagent_containers/glass/bottle/vial/V = I
 		V.forceMove(user.loc)
 		user.put_in_hands(V)
-		to_chat(user, "<span class='notice'>You remove [vial] from [src].</span>")
+		to_chat(user, "<span class='notice'>You remove \the [vial] from \the [src].</span>")
 		vial = null
 		update_icon()
 		playsound(loc, 'sound/weapons/empty.ogg', 50, 1)
@@ -114,10 +137,15 @@
 		vial.attack_self(user)
 
 /obj/item/hypospray/mkii/emag_act(mob/user)
-	inject_wait = 0
-	spray_wait = 0
-	quickload = TRUE
-	to_chat(user, "You overcharge the [src]'s control circuit.")
+	inject_wait = COMBAT_WAIT_INJECT
+	spray_wait = COMBAT_WAIT_SPRAY
+	spray_self = COMBAT_SELF_INJECT
+	inject_self = COMBAT_SELF_SPRAY
+	penetrates = TRUE
+	to_chat(user, "You overcharge \the [src]'s control circuit.")
+
+/obj/item/hypospray/mkii/attack_hand(mob/user)
+	. = ..() //Don't bother changing this or removing it from containers will break.
 
 /obj/item/hypospray/mkii/attack(obj/item/I, mob/user, params)
 	return
@@ -135,7 +163,7 @@
 	var/mob/living/L
 	if(isliving(target))
 		L = target
-		if(!L.can_inject(user, 1))
+		if(!penetrates && !L.can_inject(user, 1)) //This check appears another four times, since otherwise the penetrating sprays will break in do_mob.
 			return
 
 	if(!L && !target.is_injectable()) //only checks on non-living mobs, due to how can_inject() handles
@@ -162,12 +190,12 @@
 		switch(mode)
 			if(HYPO_INJECT)
 				if(L) //living mob
-					if(!L.can_inject(user, TRUE))
-						return
 					if(L != user)
-						L.visible_message("<span class='danger'>[user] is trying to inject [L] with [src]!</span>", \
-										"<span class='userdanger'>[user] is trying to inject [L] with the [src]!</span>")
-						if(!do_mob(user, L, inject_wait, extra_checks=CALLBACK(L, /mob/living/proc/can_inject,user,1)))
+						L.visible_message("<span class='danger'>[user] is trying to inject [L] with \the [src]!</span>", \
+										"<span class='userdanger'>[user] is trying to inject [L] with \the [src]!</span>")
+						if(!do_mob(user, L, inject_wait))
+							return
+						if(!penetrates && !L.can_inject(user, 1))
 							return
 						if(!vial.reagents.total_volume)
 							return
@@ -176,7 +204,9 @@
 						L.visible_message("<span class='danger'>[user] uses the [src] on [L]!</span>", \
 										"<span class='userdanger'>[user] uses the [src] on [L]!</span>")
 					else
-						if(!do_mob(user, L, 0, extra_checks=CALLBACK(L, /mob/living/proc/can_inject,user,1)))
+						if(!do_mob(user, L, inject_self))
+							return
+						if(!penetrates && !L.can_inject(user, 1))
 							return
 						if(!vial.reagents.total_volume)
 							return
@@ -196,12 +226,12 @@
 
 			if(HYPO_SPRAY)
 				if(L) //living mob
-					if(!L.can_inject(user, TRUE))
-						return
 					if(L != user)
-						L.visible_message("<span class='danger'>[user] is trying to inject [L] with [src]!</span>", \
-										"<span class='userdanger'>[user] is trying to inject [L] with the [src]!</span>")
-						if(!do_mob(user, L, spray_wait, extra_checks=CALLBACK(L, /mob/living/proc/can_inject,user,1)))
+						L.visible_message("<span class='danger'>[user] is trying to spray [L] with \the [src]!</span>", \
+										"<span class='userdanger'>[user] is trying to spray [L] with \the [src]!</span>")
+						if(!do_mob(user, L, spray_wait))
+							return
+						if(!penetrates && !L.can_inject(user, 1))
 							return
 						if(!vial.reagents.total_volume)
 							return
@@ -210,7 +240,9 @@
 						L.visible_message("<span class='danger'>[user] uses the [src] on [L]!</span>", \
 										"<span class='userdanger'>[user] uses the [src] on [L]!</span>")
 					else
-						if(!do_mob(user, L, 0, extra_checks=CALLBACK(L, /mob/living/proc/can_inject,user,1)))
+						if(!do_mob(user, L, spray_self))
+							return
+						if(!penetrates && !L.can_inject(user, 1))
 							return
 						if(!vial.reagents.total_volume)
 							return
