@@ -32,7 +32,6 @@
 /obj/item/reagent_containers/glass/bottle/vial/reskin_obj(mob/M) //Makes the vials completely reskinnable, and renames them - overrides /obj/proc/reskin_obj
 	if(!LAZYLEN(unique_reskin))
 		return
-	to_chat(M, "<b>Reskin options for [name]:</b>")
 	var/choice = input(M,"Do you wish to recolour your [src]?","Vial Recolour") as null|anything in unique_reskin
 	if(!QDELETED(src) && choice && !current_skin && !M.incapacitated() && in_range(M,src))
 		if(!unique_reskin[choice])
