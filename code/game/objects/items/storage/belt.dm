@@ -46,7 +46,9 @@
 		/obj/item/device/geiger_counter,
 		/obj/item/extinguisher/mini,
 		/obj/item/device/radio,
-		/obj/item/clothing/gloves
+		/obj/item/clothing/gloves,
+		/obj/item/holosign_creator,
+		/obj/item/device/assembly/signaler
 		)
 	content_overlays = TRUE
 
@@ -155,6 +157,11 @@
 		/obj/item/tank/internals/emergency_oxygen,
 		/obj/item/pinpointer/crew,
 		/obj/item/hypospray
+		/obj/item/pinpointer/crew, 
+		/obj/item/gun/syringe/syndicate,
+		/obj/item/implantcase,
+		/obj/item/implant,
+		/obj/item/implanter
 		)
 
 
@@ -176,13 +183,13 @@
 		/obj/item/ammo_casing/shotgun,
 		/obj/item/ammo_box,
 		/obj/item/reagent_containers/food/snacks/donut,
-		/obj/item/reagent_containers/food/snacks/donut/jelly,
 		/obj/item/kitchen/knife/combat,
 		/obj/item/device/flashlight/seclite,
 		/obj/item/melee/classic_baton/telescopic,
 		/obj/item/device/radio,
-		/obj/item/clothing/gloves/,
-		/obj/item/restraints/legcuffs/bola
+		/obj/item/clothing/gloves,
+		/obj/item/restraints/legcuffs/bola,
+		/obj/item/holosign_creator/security
 		)
 	content_overlays = TRUE
 
@@ -210,6 +217,7 @@
 		/obj/item/weldingtool,
 		/obj/item/wirecutters,
 		/obj/item/wrench,
+		/obj/item/device/multitool,
 		/obj/item/device/flashlight,
 		/obj/item/stack/cable_coil,
 		/obj/item/device/analyzer,
@@ -403,7 +411,9 @@
 		/obj/item/soap,
 		/obj/item/holosign_creator,
 		/obj/item/key/janitor,
-		/obj/item/clothing/gloves
+		/obj/item/clothing/gloves,
+		/obj/item/melee/flyswatter,
+		/obj/item/device/assembly/mousetrap
 		)
 
 /obj/item/storage/belt/bandolier
